@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>MéloMémoire 🎵</title>
+<!-- ✅ Rend l'app installable sur iPhone -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="MéloMémoire">
+<meta name="theme-color" content="#5b21b6">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%235b21b6'/%3E%3Ctext x='90' y='120' text-anchor='middle' font-size='90'%3E🎵%3C/text%3E%3C/svg%3E">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#f5f0ff;--surface:#fff;--surface2:#faf5ff;
+  --primary:#7c3aed;--pl:#a78bfa;--pd:#5b21b6;
+  --sec:#db2777;--sel:#f472b6;
+  --text:#1e1b4b;--muted:#6b7280;
+  --ok:#059669;--okb:#d1fae5;
+  --warn:#d97706;--warnb:#fef3c7;
+  --err:#dc2626;--errb:#fee2e2;
+  --border:#e5e7eb;
+  --sh:0 4px 20px rgba(124,58,237,.1);
+  --shh:0 8px 30px rgba(124,58,237,.2);
+  --r:16px;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;padding-bottom:env(safe-area-inset-bottom)}
+header{padding-top:calc(16px + env(safe-area-inset-top)) !important}
+
+/* ── Header ── */
+header{background:linear-gradient(135deg,var(--pd),var(--primary));color:#fff;padding:16px 22px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 4px 20px rgba(91,33,182,.3);position:sticky;top:0;z-index:100}
+.hlogo{display:flex;align-items:center;gap:11px}
+.hlogo span{font-size:28px}
+.hlogo h1{font-size:20px;font-weight:800;letter-spacing:-.5px}
+.hlogo p{font-size:11px;opacity:.8}
+#backBtn{background:rgba(255,255,255,.2);border:none;color:#fff;padding:7px 14px;border-radius:8px;cursor:pointer;font-size:14px;font-weight:600;display:none;gap:6px;align-items:center;transition:.2s}
+#backBtn:hover{background:rgba(255,255,255,.3)}
+#backBtn.on{display:flex}
+
+/* ── Layout ── */
+.wrap{max-width:800px;margin:0 auto;padding:22px 16px}
+.view{display:none}.view.on{display:block}
+
+/* ── Cards ── */
+.card{background:var(--surface);border-radius:var(--r);padding:22px;box-shadow:var(--sh);margin-bottom:14px}
+
+/* ── Buttons ── */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:11px 20px;border-radius:11px;border:none;cursor:pointer;font-size:14px;font-weight:600;transition:.2s;font-family:inherit}
+.bp{background:linear-gradient(135deg,var(--primary),var(--pd));color:#fff;box-shadow:0 4px 14px rgba(124,58,237,.3)}
+.bp:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(124,58,237,.4)}
+.bs{background:var(--surface2);color:var(--primary);border:2px solid var(--pl)}
+.bs:hover{background:var(--primary);color:#fff}
+.bd{background:var(--errb);color:var(--err)}.bd:hover{background:var(--err);color:#fff}
+.bg-{background:linear-gradient(135deg,#059669,#047857);color:#fff;box-shadow:0 4px 14px rgba(5,150,105,.3)}
+.bg-:hover{transform:translateY(-1px)}
+.ba{background:linear-gradient(135deg,#0369a1,#0284c7);color:#fff;box-shadow:0 4px 14px rgba(3,105,161,.3)}
+.ba:hover{transform:translateY(-1px)}
+.lg{padding:14px 30px;font-size:16px;border-radius:14px}
+.sm{padding:7px 13px;font-size:13px;border-radius:8px}
+
+/* ── Inputs ── */
+.fg{margin-bottom:16px}
+label{display:block;font-weight:600;margin-bottom:5px}
+input[type=text],textarea{width:100%;padding:11px 14px;border:2px solid var(--border);border-radius:11px;font-size:15px;font-family:inherit;color:var(--text);transition:.2s;outline:none}
+input[type=text]:focus,textarea:focus{border-color:var(--pl);box-shadow:0 0 0 3px rgba(124,58,237,.1)}
+textarea{resize:vertical;min-height:190px;line-height:1.8}
+
+/* ── Library ── */
+.lib-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.lib-head h2{font-size:21px;font-weight:700}
+.song-row{background:var(--surface);border-radius:var(--r);padding:16px 20px;box-shadow:var(--sh);margin-bottom:9px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:.2s;border-left:4px solid var(--pl)}
+.song-row:hover{box-shadow:var(--shh);transform:translateX(4px)}
+.song-row h3{font-size:16px;font-weight:700;margin-bottom:2px}
+.song-row p{font-size:12px;color:var(--muted)}
+.sr-right{display:flex;align-items:center;gap:9px}
+.stars{display:flex;gap:1px;font-size:14px}
+.s1{color:#f59e0b}.s0{color:#d1d5db}
+.banner{background:linear-gradient(135deg,var(--pd),var(--sec));color:#fff;border-radius:var(--r);padding:24px;margin-bottom:18px}
+.banner h2{font-size:19px;margin-bottom:7px}
+.banner p{font-size:13px;opacity:.9;line-height:1.7}
+.sg{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-bottom:18px}
+.sb{background:var(--surface);border-radius:11px;padding:14px;text-align:center;box-shadow:var(--sh)}
+.sn{font-size:24px;font-weight:800;color:var(--primary)}
+.sl{font-size:12px;color:var(--muted);margin-top:2px}
+.empty{text-align:center;padding:50px 18px;color:var(--muted)}
+.empty .em{font-size:52px;margin-bottom:12px}
+.empty h3{font-size:18px;color:var(--text);margin-bottom:7px}
+.badge{display:inline-block;padding:2px 9px;border-radius:100px;font-size:11px;font-weight:700}
+
+/* ── Song Detail ── */
+.sd-head{text-align:center;margin-bottom:24px}
+.sd-head h2{font-size:24px;font-weight:800;color:var(--pd);margin-bottom:5px}
+.sd-head p{color:var(--muted);font-size:13px}
+.chip{display:inline-block;padding:3px 11px;border-radius:100px;font-size:12px;font-weight:700;background:rgba(124,58,237,.1);color:var(--pd)}
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+@media(max-width:480px){.modes{grid-template-columns:1fr}.sg{grid-template-columns:1fr 1fr}}
+.mc{background:var(--surface);border-radius:var(--r);padding:18px;cursor:pointer;transition:.2s;border:2px solid transparent;box-shadow:var(--sh);text-align:center}
+.mc:hover{border-color:var(--pl);box-shadow:var(--shh);transform:translateY(-3px)}
+.mc.audio{border-color:rgba(3,105,161,.2);background:linear-gradient(135deg,#f0f9ff,#e0f2fe)}
+.mc.audio:hover{border-color:#0369a1;box-shadow:0 8px 28px rgba(3,105,161,.2)}
+.mc .me{font-size:32px;margin-bottom:9px}
+.mc h3{font-size:14px;font-weight:700;margin-bottom:4px}
+.mc p{font-size:12px;color:var(--muted);line-height:1.5}
+.mc .dif{margin-top:9px;display:flex;gap:3px;justify-content:center}
+.dd{width:7px;height:7px;border-radius:50%}
+.df{background:var(--primary)}.de{background:var(--border)}
+.dfa{background:#0369a1}.dea{background:#bfdbfe}
+.section-lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin:16px 0 10px;font-weight:700}
+
+/* ── Learning common ── */
+.lh{background:var(--surface);border-radius:var(--r);padding:16px 20px;margin-bottom:14px;box-shadow:var(--sh);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.lh h2{font-size:18px;font-weight:700;color:var(--pd)}
+.lh p{font-size:12px;color:var(--muted)}
+.pb{background:var(--border);border-radius:100px;height:7px;margin:10px 0;overflow:hidden}
+.pbi{height:100%;border-radius:100px;background:linear-gradient(90deg,var(--primary),var(--sec));transition:width .5s}
+.pc{text-align:center;font-size:13px;color:var(--muted);margin-bottom:12px}
+.tip{background:linear-gradient(135deg,#ede9fe,#fce7f3);border-radius:11px;padding:12px 16px;margin-bottom:14px;border-left:4px solid var(--pl);font-size:13px;color:var(--pd);line-height:1.6}
+.tip strong{color:var(--pd)}
+.tipa{background:linear-gradient(135deg,#e0f2fe,#dbeafe);border-left-color:#0369a1;color:#0c4a6e}
+.tipa strong{color:#0c4a6e}
+.ld{background:var(--surface);border-radius:var(--r);padding:28px;text-align:center;margin-bottom:14px;box-shadow:var(--sh);min-height:100px;display:flex;align-items:center;justify-content:center}
+.lt{font-size:19px;line-height:1.7;font-style:italic}
+.lq{font-size:22px;color:var(--muted);letter-spacing:6px}
+.br{display:flex;gap:9px;justify-content:center;flex-wrap:wrap;margin-bottom:12px}
+.hint{background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:10px 13px;font-size:13px;color:#92400e;margin-bottom:10px;display:none}
+.hint.on{display:block}
+.sa{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
+
+/* ── Guided ── */
+.ft{background:var(--surface);border-radius:var(--r);padding:26px;box-shadow:var(--sh);margin-bottom:14px}
+.fl{font-size:17px;line-height:2.2;font-style:italic;padding:3px 8px;border-radius:6px;transition:.15s;cursor:pointer;display:flex;align-items:center;gap:8px}
+.fl:hover{background:var(--surface2)}
+.fl.hl{background:rgba(124,58,237,.12);color:var(--pd);font-weight:700;border-left:3px solid var(--primary);padding-left:10px}
+.fl .spk{opacity:0;font-size:14px;cursor:pointer;transition:.2s;flex-shrink:0;background:none;border:none;padding:2px 6px;border-radius:4px}
+.fl:hover .spk{opacity:1}
+.fl .spk:hover{background:var(--pl);color:#fff}
+.fls{max-height:400px;overflow-y:auto;padding-right:6px}
+.fls::-webkit-scrollbar{width:3px}
+.fls::-webkit-scrollbar-thumb{background:var(--pl);border-radius:2px}
+.vb{height:16px}
+
+/* ── Blanks ── */
+.lwb{background:var(--surface);border-radius:var(--r);padding:26px;box-shadow:var(--sh);margin-bottom:14px;font-size:17px;line-height:2.8;font-style:italic}
+.bi{display:inline-block;border:none;border-bottom:2px solid var(--pl);outline:none;font-size:16px;font-family:inherit;font-style:italic;color:var(--pd);background:transparent;text-align:center;min-width:65px;padding:2px 4px;transition:.2s}
+.bi:focus{border-bottom-color:var(--primary)}
+.bi.ok{border-bottom-color:var(--ok);color:var(--ok)}
+.bi.ko{border-bottom-color:var(--err);color:var(--err)}
+.ds{display:flex;gap:7px;margin-bottom:12px;flex-wrap:wrap}
+.db{padding:6px 14px;border-radius:100px;border:2px solid var(--border);background:var(--surface);cursor:pointer;font-size:12px;font-weight:600;color:var(--muted);transition:.2s;font-family:inherit}
+.db.on{border-color:var(--primary);background:var(--primary);color:#fff}
+
+/* ── Results ── */
+.rc{background:var(--surface);border-radius:var(--r);padding:28px;box-shadow:var(--sh);text-align:center;margin-bottom:14px}
+.sc{width:100px;height:100px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--sec));display:flex;align-items:center;justify-content:center;margin:0 auto 16px;box-shadow:0 8px 28px rgba(124,58,237,.3)}
+.sn2{font-size:30px;font-weight:900;color:#fff}
+.enc{font-size:17px;font-weight:700;color:var(--pd);margin-bottom:7px}
+.det{font-size:13px;color:var(--muted);margin-bottom:18px}
+.cmp{text-align:left;margin:16px 0}
+.cl{padding:6px 10px;border-radius:7px;margin-bottom:2px;font-size:13px;line-height:1.6}
+.cl.ok{background:var(--okb);color:#065f46}
+.cl.ko{background:var(--errb);color:#991b1b}
+.cl.mx{background:var(--warnb);color:#92400e}
+.co{font-size:11px;opacity:.7;margin-top:1px}
+
+/* ── Recall ── */
+.ra{background:var(--surface);border-radius:var(--r);padding:20px;box-shadow:var(--sh);margin-bottom:14px}
+.ri{width:100%;min-height:260px;border:2px solid var(--border);border-radius:11px;padding:13px;font-size:15px;font-family:inherit;line-height:2;resize:vertical;outline:none;transition:.2s}
+.ri:focus{border-color:var(--pl)}
+
+/* ── First letter ── */
+.flt{font-family:monospace;font-size:19px;letter-spacing:5px;color:var(--pl);line-height:1.8}
+.flc{background:var(--surface);border-radius:var(--r);padding:26px;text-align:center;box-shadow:var(--sh);margin-bottom:14px}
+
+/* ── Hidden ── */
+.hn{filter:blur(8px);transition:filter .35s}
+.hn.on{filter:none}
+
+/* ── AUDIO MODES ── */
+.speed-sel{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.speed-sel span{font-size:12px;color:var(--muted);font-weight:600}
+.spd{padding:5px 12px;border-radius:100px;border:2px solid var(--border);background:var(--surface);cursor:pointer;font-size:12px;font-weight:600;color:var(--muted);transition:.2s;font-family:inherit}
+.spd.on{border-color:#0369a1;background:#0369a1;color:#fff}
+
+.speak-btn{background:linear-gradient(135deg,#0369a1,#0284c7);color:#fff;border:none;border-radius:50%;width:72px;height:72px;font-size:28px;cursor:pointer;box-shadow:0 6px 20px rgba(3,105,161,.3);transition:.2s;display:flex;align-items:center;justify-content:center}
+.speak-btn:hover{transform:scale(1.05);box-shadow:0 8px 28px rgba(3,105,161,.4)}
+.speak-btn:active{transform:scale(.97)}
+.speak-btn.speaking{animation:spkpulse 1.2s infinite}
+@keyframes spkpulse{0%,100%{box-shadow:0 0 0 0 rgba(3,105,161,.4)}50%{box-shadow:0 0 0 14px rgba(3,105,161,0)}}
+
+.mic-btn{background:linear-gradient(135deg,#dc2626,#b91c1c);color:#fff;border:none;border-radius:50%;width:72px;height:72px;font-size:28px;cursor:pointer;box-shadow:0 6px 20px rgba(220,38,38,.3);transition:.2s;display:flex;align-items:center;justify-content:center}
+.mic-btn:hover{transform:scale(1.05)}
+.mic-btn.listening{animation:micpulse 1s infinite}
+@keyframes micpulse{0%,100%{box-shadow:0 0 0 0 rgba(220,38,38,.5)}50%{box-shadow:0 0 0 16px rgba(220,38,38,0)}}
+.mic-status{text-align:center;font-size:14px;color:var(--muted);min-height:24px;margin:8px 0}
+.mic-transcript{background:var(--surface2);border-radius:11px;padding:14px 18px;margin:10px 0;font-size:17px;font-style:italic;text-align:center;min-height:52px;border:2px solid var(--border)}
+
+.audio-line{background:var(--surface);border-radius:var(--r);padding:28px;text-align:center;margin-bottom:14px;box-shadow:var(--sh);min-height:110px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+.audio-line .lt{font-size:20px}
+.audio-controls{display:flex;gap:16px;align-items:center;justify-content:center}
+
+.dict-input{width:100%;padding:13px 16px;border:2px solid var(--border);border-radius:12px;font-size:17px;font-family:inherit;font-style:italic;outline:none;transition:.2s}
+.dict-input:focus{border-color:var(--pl);box-shadow:0 0 0 3px rgba(124,58,237,.1)}
+.dict-input.ok{border-color:var(--ok);background:var(--okb)}
+.dict-input.ko{border-color:var(--err);background:var(--errb)}
+.dict-answer{font-size:13px;margin-top:7px;display:none}
+.dict-answer.on{display:block}
+
+.karaoke-display{background:var(--surface);border-radius:var(--r);padding:24px 28px;box-shadow:var(--sh);margin-bottom:14px;max-height:440px;overflow-y:auto}
+.karaoke-display::-webkit-scrollbar{width:3px}
+.karaoke-display::-webkit-scrollbar-thumb{background:var(--pl);border-radius:2px}
+.kl{padding:5px 10px;border-radius:8px;font-size:17px;font-style:italic;line-height:2.2;transition:.4s;cursor:default}
+.kl.past{opacity:.35}
+.kl.active{background:rgba(3,105,161,.13);color:#0c4a6e;font-weight:700;border-left:3px solid #0369a1;padding-left:13px;font-size:19px}
+.kl.coming{opacity:.6}
+.kvb{height:14px}
+.karaoke-controls{background:var(--surface);border-radius:var(--r);padding:16px 20px;box-shadow:var(--sh);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.kc-btns{display:flex;gap:8px}
+
+.not-supported{background:var(--warnb);border:1px solid var(--warn);border-radius:12px;padding:14px 18px;font-size:13px;color:#92400e;margin-bottom:14px;display:none}
+.not-supported.on{display:block}
+
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--text);color:#fff;padding:12px 20px;border-radius:100px;font-size:14px;font-weight:600;z-index:1000;transition:.3s;box-shadow:0 8px 28px rgba(0,0,0,.2)}
+.toast.on{transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hlogo">
+    <span>🎵</span>
+    <div><h1>MéloMémoire</h1><p>Retrouvez vos textes, retrouvez-vous</p></div>
+  </div>
+  <button id="backBtn" onclick="goBack()">← Retour</button>
+</header>
+
+<div class="wrap">
+
+<div class="view on" id="v-lib">
+  <div class="banner">
+    <h2>✨ Votre espace de reconstruction</h2>
+    <p>La mémoire se reconstruit avec patience et bienveillance. Chaque session est une petite victoire. Ajoutez vos chansons et entraînez-vous à votre rythme, sans pression.</p>
+  </div>
+  <div class="sg">
+    <div class="sb"><div class="sn" id="stSongs">0</div><div class="sl">chansons</div></div>
+    <div class="sb"><div class="sn" id="stSess">0</div><div class="sl">sessions</div></div>
+    <div class="sb"><div class="sn" id="stMast">0%</div><div class="sl">maîtrise moy.</div></div>
+  </div>
+  <div class="lib-head">
+    <h2>🎼 Mes Chansons</h2>
+    <button class="btn bp" onclick="showAdd()">+ Ajouter</button>
+  </div>
+  <div id="songList"></div>
+</div>
+
+<div class="view" id="v-add">
+  <div class="card">
+    <h2 style="font-size:20px;margin-bottom:16px;color:var(--pd)" id="addTitle">🎵 Ajouter une chanson</h2>
+    <div class="fg"><label for="inTitle">Titre</label><input type="text" id="inTitle" placeholder="Ex : La Vie en Rose, Hallelujah…"></div>
+    <div class="fg"><label for="inLyrics">Paroles</label><textarea id="inLyrics" placeholder="Collez ou tapez les paroles ici…&#10;&#10;💡 Laissez une ligne vide entre couplets/refrains pour les séparer." oninput="autoDetectLang(this.value)"></textarea></div>
+    <div class="fg">
+      <label>Langue <span id="langDetected" style="font-weight:400;color:var(--muted);font-size:12px"></span></label>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;padding:8px 14px;border:2px solid var(--border);border-radius:10px;font-weight:600;font-size:14px">
+          <input type="radio" name="songLang" value="fr-FR" checked style="accent-color:var(--primary)"> 🇫🇷 Français
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;padding:8px 14px;border:2px solid var(--border);border-radius:10px;font-weight:600;font-size:14px">
+          <input type="radio" name="songLang" value="en-US" style="accent-color:var(--primary)"> 🇺🇸 Anglais (US)
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;padding:8px 14px;border:2px solid var(--border);border-radius:10px;font-weight:600;font-size:14px">
+          <input type="radio" name="songLang" value="en-GB" style="accent-color:var(--primary)"> 🇬🇧 Anglais (UK)
+        </label>
+      </div>
+    </div>
+    <div style="display:flex;gap:9px;justify-content:flex-end">
+      <button class="btn bs" onclick="goBack()">Annuler</button>
+      <button class="btn bp" onclick="saveSong()">💾 Enregistrer</button>
+    </div>
+  </div>
+  <div class="tip"><strong>💡 Conseil :</strong> Séparez les couplets par une ligne vide. Plus les sections sont claires, plus elles seront faciles à mémoriser.</div>
+</div>
+
+<div class="view" id="v-detail">
+  <div class="sd-head">
+    <div class="chip" style="margin-bottom:8px">🎵 Chanson</div>
+    <h2 id="dTitle">Titre</h2>
+    <p id="dStats">0 lignes · 0 session(s)</p>
+  </div>
+  <div class="tip" id="dTip"></div>
+  <p class="section-lbl">📝 Modes texte</p>
+  <div class="modes">
+    <div class="mc" onclick="startMode('guided')"><div class="me">📖</div><h3>Lecture Guidée</h3><p>Lisez le texte complet, ligne par ligne. Idéal pour se familiariser.</p><div class="dif"><div class="dd df"></div><div class="dd de"></div><div class="dd de"></div><div class="dd de"></div></div></div>
+    <div class="mc" onclick="startMode('chunks')"><div class="me">🧩</div><h3>Par Morceaux</h3><p>Une ligne à la fois, révélée à votre rythme.</p><div class="dif"><div class="dd df"></div><div class="dd df"></div><div class="dd de"></div><div class="dd de"></div></div></div>
+    <div class="mc" onclick="startMode('blanks')"><div class="me">✏️</div><h3>Mots Manquants</h3><p>Complétez les blancs dans les paroles. Difficulté ajustable.</p><div class="dif"><div class="dd df"></div><div class="dd df"></div><div class="dd df"></div><div class="dd de"></div></div></div>
+    <div class="mc" onclick="startMode('recall')"><div class="me">🧠</div><h3>Rappel Libre</h3><p>Écrivez la chanson de mémoire. La technique la plus puissante.</p><div class="dif"><div class="dd df"></div><div class="dd df"></div><div class="dd df"></div><div class="dd df"></div></div></div>
+    <div class="mc" onclick="startMode('fl')"><div class="me">🔡</div><h3>Premières Lettres</h3><p>Seules les premières lettres de chaque mot sont données.</p><div class="dif"><div class="dd df"></div><div class="dd df"></div><div class="dd df"></div><div class="dd de"></div></div></div>
+    <div class="mc" onclick="startMode('hidden')"><div class="me">🙈</div><h3>Ligne Cachée</h3><p>Devinez la ligne suivante grâce au contexte de la précédente.</p><div class="dif"><div class="dd df"></div><div class="dd df"></div><div class="dd df"></div><div class="dd de"></div></div></div>
+  </div>
+  <p class="section-lbl">🎵 Modes audio</p>
+  <div class="modes">
+    <div class="mc audio" onclick="startMode('karaoke')"><div class="me">🎼</div><h3>Karaoké</h3><p>L'appli lit les paroles à voix haute, ligne par ligne. Suivez et chantez !</p><div class="dif"><div class="dd dfa"></div><div class="dd dea"></div><div class="dd dea"></div><div class="dd dea"></div></div></div>
+    <div class="mc audio" onclick="startMode('dictate')"><div class="me">🎧</div><h3>Écoute & Écris</h3><p>Écoutez chaque ligne, puis tapez ce que vous avez mémorisé.</p><div class="dif"><div class="dd dfa"></div><div class="dd dfa"></div><div class="dd dfa"></div><div class="dd dea"></div></div></div>
+    <div class="mc audio" onclick="startMode('repeat')"><div class="me">🎙️</div><h3>Écoute & Répète</h3><p>Écoutez, puis dites la ligne à voix haute. L'appli compare !</p><div class="dif"><div class="dd dfa"></div><div class="dd dfa"></div><div class="dd dfa"></div><div class="dd dfa"></div></div></div>
+  </div>
+  <div class="sa">
+    <button class="btn bs sm" onclick="editSong()">✏️ Modifier</button>
+    <button class="btn bd sm" onclick="deleteSong()">🗑️ Supprimer</button>
+  </div>
+</div>
+
+<div class="view" id="v-guided">
+  <div class="lh"><div><h2>📖 Lecture Guidée</h2><p id="g-name"></p></div><span class="chip">Cliquez sur une ligne</span></div>
+  <div class="tip"><strong>💡 Technique :</strong> Cliquez sur chaque ligne pour la mettre en évidence. <strong>Lisez à voix haute</strong> — ou cliquez 🔊 pour l'entendre.</div>
+  <div class="ft"><div class="fls" id="g-lyrics"></div></div>
+  <div class="br"><button class="btn bp lg" onclick="finish('guided',80)">✅ J'ai lu tout le texte !</button></div>
+</div>
+
+<div class="view" id="v-chunks">
+  <div class="lh"><div><h2>🧩 Par Morceaux</h2><p id="c-name"></p></div></div>
+  <div class="pb"><div class="pbi" id="c-pb" style="width:0%"></div></div>
+  <div class="pc" id="c-cnt">Ligne 1 / ?</div>
+  <div class="tip"><strong>💡 Technique :</strong> Essayez de vous souvenir avant de révéler. Même si vous vous trompez, l'effort renforce la mémorisation !</div>
+  <div class="ld" id="c-disp"><span class="lq">? ? ? ? ?</span></div>
+  <div class="hint" id="c-hint"></div>
+  <div class="br" id="c-b1">
+    <button class="btn bs" onclick="chunkHint()">💭 Indice (1ères lettres)</button>
+    <button class="btn bp" onclick="chunkReveal()">👁️ Révéler</button>
+  </div>
+  <div class="br" id="c-b2" style="display:none">
+    <button class="btn bs sm" onclick="speakLine(cLines[S.idx-1])">🔊 Écouter</button>
+    <button class="btn bp lg" onclick="chunkNext()">Ligne suivante →</button>
+  </div>
+  <div class="br" id="c-done" style="display:none">
+    <button class="btn bs sm" onclick="speakLine(cLines[S.idx])">🔊 Écouter</button>
+    <button class="btn bg- lg" onclick="finish('chunks',85)">🎉 J'ai terminé !</button>
+  </div>
+</div>
+
+<div class="view" id="v-blanks">
+  <div class="lh"><div><h2>✏️ Mots Manquants</h2><p id="b-name"></p></div></div>
+  <p style="font-size:12px;color:var(--muted);margin-bottom:6px">Difficulté (% de mots cachés) :</p>
+  <div class="ds">
+    <button class="db on" data-p="20" onclick="setPct(20,this)">Facile 20%</button>
+    <button class="db" data-p="40" onclick="setPct(40,this)">Moyen 40%</button>
+    <button class="db" data-p="60" onclick="setPct(60,this)">Difficile 60%</button>
+    <button class="db" data-p="80" onclick="setPct(80,this)">Expert 80%</button>
+  </div>
+  <div class="tip"><strong>💡 Technique :</strong> Essayez de compléter sans regarder les mots visibles. Le contexte de la phrase vous guidera.</div>
+  <div class="lwb" id="b-content"></div>
+  <div class="br">
+    <button class="btn bs sm" onclick="speakSong()">🔊 Écouter toute la chanson</button>
+    <button class="btn bs" onclick="checkBlanks()">🔍 Vérifier</button>
+    <button class="btn bp" onclick="genBlanks()">🔄 Nouveau</button>
+  </div>
+  <div id="b-res" style="display:none"><div class="rc"><div class="sc"><span class="sn2" id="b-sc">0%</span></div><p class="enc" id="b-enc"></p><div class="br"><button class="btn bs" onclick="genBlanks()">🔄 Réessayer</button><button class="btn bp" onclick="finish('blanks',window._bScore)">✅ Terminer</button></div></div></div>
+</div>
+
+<div class="view" id="v-recall">
+  <div class="lh"><div><h2>🧠 Rappel Libre</h2><p id="r-name"></p></div></div>
+  <div class="tip"><strong>💡 La technique reine :</strong> Écrire le texte de mémoire est la méthode la plus efficace connue en neurosciences. Chaque effort de rappel, même imparfait, ancre le texte en mémoire à long terme.</div>
+  <div class="ra"><p style="font-size:13px;color:var(--muted);margin-bottom:9px">Écrivez les paroles dont vous vous souvenez :</p><textarea class="ri" id="r-input" placeholder="Commencez à écrire les paroles…"></textarea></div>
+  <div id="r-hints"><div class="hint" id="r-hint"></div><div class="br"><button class="btn bs sm" onclick="recallHint()">💭 Indice</button><button class="btn bp" onclick="checkRecall()">✅ Vérifier</button></div></div>
+  <div id="r-res" style="display:none"><div class="rc"><div class="sc"><span class="sn2" id="r-sc">0%</span></div><p class="enc" id="r-enc"></p><p class="det" id="r-det"></p><div class="cmp" id="r-cmp"></div><div class="br"><button class="btn bs" onclick="resetRecall()">🔄 Réessayer</button><button class="btn bp" onclick="finish('recall',window._rScore)">✅ Terminer</button></div></div></div>
+</div>
+
+<div class="view" id="v-fl">
+  <div class="lh"><div><h2>🔡 Premières Lettres</h2><p id="fl-name"></p></div></div>
+  <div class="pb"><div class="pbi" id="fl-pb" style="width:0%"></div></div>
+  <div class="pc" id="fl-cnt">Ligne 1 / ?</div>
+  <div class="tip"><strong>💡 Technique :</strong> Chaque lettre = la première lettre d'un mot. Laissez le rythme et la mélodie vous guider !</div>
+  <div class="flc"><div class="flt" id="fl-hint">_ _ _ _</div><p style="font-size:11px;color:var(--muted);margin-top:9px">Premières lettres de chaque mot</p></div>
+  <div class="ld" id="fl-rev" style="display:none"><span class="lt" id="fl-line"></span></div>
+  <div class="br" id="fl-b1"><button class="btn bs sm" onclick="speakFL()">🔊 Écouter l'indice</button><button class="btn bp" onclick="flReveal()">👁️ Révéler</button></div>
+  <div class="br" id="fl-b2" style="display:none"><button class="btn bs sm" onclick="speakLine(flLines[S.idx-1])">🔊 Écouter</button><button class="btn bp lg" onclick="flNext()">Suivant →</button></div>
+  <div class="br" id="fl-done" style="display:none"><button class="btn bs sm" onclick="speakLine(flLines[S.idx])">🔊 Écouter</button><button class="btn bg- lg" onclick="finish('fl',80)">🎉 J'ai terminé !</button></div>
+</div>
+
+<div class="view" id="v-hidden">
+  <div class="lh"><div><h2>🙈 Ligne Cachée</h2><p id="h-name"></p></div></div>
+  <div class="pb"><div class="pbi" id="h-pb" style="width:0%"></div></div>
+  <div class="pc" id="h-cnt">Ligne 2 / ?</div>
+  <div class="tip"><strong>💡 Technique :</strong> Lisez la ligne précédente, puis devinez la suivante. Le contexte vous aide !</div>
+  <div class="card">
+    <p style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px">Ligne précédente :</p>
+    <p class="lt" id="h-prev" style="opacity:.65;margin-bottom:12px"></p>
+    <hr style="border:1px solid var(--border);margin-bottom:12px">
+    <p style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px">Ligne suivante :</p>
+    <p class="lt hn" id="h-next"></p>
+  </div>
+  <div class="br" id="h-b1"><button class="btn bp" onclick="hidReveal()">👁️ Révéler</button></div>
+  <div class="br" id="h-b2" style="display:none"><button class="btn bs sm" onclick="speakLine(hLines[S.idx])">🔊 Écouter</button><button class="btn bp lg" onclick="hidNext()">Suivant →</button></div>
+  <div class="br" id="h-done" style="display:none"><button class="btn bg- lg" onclick="finish('hidden',82)">🎉 J'ai terminé !</button></div>
+</div>
+
+<div class="view" id="v-karaoke">
+  <div class="lh"><div><h2>🎼 Karaoké</h2><p id="k-name"></p></div></div>
+  <div class="tip tipa"><strong>🎵 Mode karaoké :</strong> L'application lit chaque ligne à voix haute et la met en surbrillance. Chantez ou récitez avec elle !</div>
+  <div class="karaoke-controls">
+    <div class="kc-btns">
+      <button class="btn ba" id="k-play" onclick="karaokePlay()">▶️ Démarrer</button>
+      <button class="btn bs" id="k-pause" onclick="karaokePause()" style="display:none">⏸️ Pause</button>
+      <button class="btn bs sm" id="k-stop" onclick="karaokeStop()" style="display:none">⏹️ Stop</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <div class="speed-sel">
+        <span>Vitesse :</span>
+        <button class="spd" data-r=".65" onclick="setSpd(this)">🐌 Lent</button>
+        <button class="spd on" data-r=".85" onclick="setSpd(this)">🚶 Normal</button>
+        <button class="spd" data-r="1.1" onclick="setSpd(this)">🏃 Rapide</button>
+      </div>
+      <label style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;cursor:pointer">
+        <input type="checkbox" id="k-mute" style="width:16px;height:16px" onchange="toggleMute(this)"> Muet (texte seul)
+      </label>
+    </div>
+  </div>
+  <div class="karaoke-display" id="k-lyrics"></div>
+  <div class="br" id="k-done" style="display:none"><button class="btn bg- lg" onclick="finish('karaoke',85)">🎉 Bravo ! Terminé !</button></div>
+</div>
+
+<div class="view" id="v-dictate">
+  <div class="lh"><div><h2>🎧 Écoute & Écris</h2><p id="d-name"></p></div></div>
+  <div class="pb"><div class="pbi" id="d-pb" style="width:0%"></div></div>
+  <div class="pc" id="d-cnt">Ligne 1 / ?</div>
+  <div class="tip tipa"><strong>🎵 Comment ça marche :</strong> Cliquez sur 🔊 pour écouter la ligne. Essayez de la mémoriser, puis tapez-la. Vous pouvez écouter autant de fois que vous voulez !</div>
+  <div class="not-supported" id="d-nosupport">⚠️ La synthèse vocale n'est pas disponible dans ce navigateur. Essayez avec Chrome ou Edge.</div>
+  <div class="audio-line">
+    <div class="audio-controls"><button class="speak-btn" id="d-spkbtn" onclick="dictateSpeak()">🔊</button></div>
+    <div class="speed-sel"><span>Vitesse :</span><button class="spd" data-r=".65" onclick="setSpd(this)">🐌 Lent</button><button class="spd on" data-r=".85" onclick="setSpd(this)">🚶 Normal</button><button class="spd" data-r="1.1" onclick="setSpd(this)">🏃 Rapide</button></div>
+    <p style="font-size:12px;color:var(--muted)">Cliquez 🔊 pour écouter (autant de fois que vous voulez)</p>
+  </div>
+  <div class="card">
+    <label for="d-input" style="margin-bottom:9px;font-size:14px;color:var(--muted)">Écrivez ce dont vous vous souvenez :</label>
+    <input type="text" class="dict-input" id="d-input" placeholder="Tapez la ligne ici…" onkeydown="if(event.key==='Enter')checkDictate()">
+    <div class="dict-answer" id="d-answer"></div>
+  </div>
+  <div class="br" id="d-b1"><button class="btn bs" onclick="skipDictate()">⏭️ Passer</button><button class="btn bp" onclick="checkDictate()">✅ Vérifier</button></div>
+  <div class="br" id="d-b2" style="display:none"><button class="btn bp lg" onclick="nextDictate()">Ligne suivante →</button></div>
+  <div id="d-done" style="display:none"><div class="rc"><div class="sc"><span class="sn2" id="d-sc">0%</span></div><p class="enc" id="d-enc"></p><p class="det" id="d-det"></p><div class="br"><button class="btn bs" onclick="startMode('dictate')">🔄 Recommencer</button><button class="btn bp" onclick="finish('dictate',window._dScore)">✅ Terminer</button></div></div></div>
+</div>
+
+<div class="view" id="v-repeat">
+  <div class="lh"><div><h2>🎙️ Écoute & Répète</h2><p id="rp-name"></p></div></div>
+  <div class="pb"><div class="pbi" id="rp-pb" style="width:0%"></div></div>
+  <div class="pc" id="rp-cnt">Ligne 1 / ?</div>
+  <div class="tip tipa"><strong>🎵 Comment ça marche :</strong> Écoutez la ligne, puis cliquez sur le micro 🎙️ et répétez-la à voix haute. L'application transcrit ce que vous dites !</div>
+  <div class="not-supported" id="rp-nosupport">⚠️ La reconnaissance vocale fonctionne dans <strong>Chrome</strong> et <strong>Edge</strong>. Sur iPhone, essayez "Écoute & Écris" à la place.</div>
+  <div class="audio-line">
+    <div class="audio-controls" style="gap:20px">
+      <div style="text-align:center"><button class="speak-btn" id="rp-spkbtn" onclick="repeatSpeak()">🔊</button><p style="font-size:11px;color:var(--muted);margin-top:5px">Écouter</p></div>
+      <div style="text-align:center"><button class="mic-btn" id="rp-mic" onclick="toggleMic()">🎙️</button><p style="font-size:11px;color:var(--muted);margin-top:5px">Répéter</p></div>
+    </div>
+    <div class="speed-sel"><span>Vitesse :</span><button class="spd" data-r=".65" onclick="setSpd(this)">🐌 Lent</button><button class="spd on" data-r=".85" onclick="setSpd(this)">🚶 Normal</button><button class="spd" data-r="1.1" onclick="setSpd(this)">🏃 Rapide</button></div>
+  </div>
+  <div class="mic-status" id="rp-status">Cliquez 🔊 pour écouter, puis 🎙️ pour répéter</div>
+  <div class="mic-transcript" id="rp-transcript">…</div>
+  <div id="rp-feedback" style="display:none;text-align:center;padding:10px;border-radius:10px;margin-bottom:12px;font-weight:600;font-size:15px"></div>
+  <div class="br" id="rp-b1"><button class="btn bs" onclick="skipRepeat()">⏭️ Passer</button><button class="btn bp" id="rp-next" onclick="nextRepeat()" disabled style="opacity:.5">Ligne suivante →</button></div>
+  <div id="rp-done" style="display:none"><div class="rc"><div class="sc"><span class="sn2" id="rp-sc">0%</span></div><p class="enc" id="rp-enc"></p><p class="det" id="rp-det"></p><div class="br"><button class="btn bs" onclick="startMode('repeat')">🔄 Recommencer</button><button class="btn bp" onclick="finish('repeat',window._rpScore)">✅ Terminer</button></div></div></div>
+</div>
+
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+let songs=JSON.parse(localStorage.getItem('mm-songs')||'[]');
+let prog=JSON.parse(localStorage.getItem('mm-prog')||'{}');
+let S={songId:null,editId:null,mode:null,idx:0,pct:20,rHintIdx:0};
+
+const save=()=>{localStorage.setItem('mm-songs',JSON.stringify(songs));localStorage.setItem('mm-prog',JSON.stringify(prog));};
+const lines=s=>s.lyrics.split('\n').map(l=>l.trim()).filter(l=>l.length>0);
+const song=()=>songs.find(s=>s.id===S.songId);
+const getProg=id=>{if(!prog[id])prog[id]={sessions:0,scores:{},last:null};return prog[id];};
+const mastery=id=>{const p=getProg(id),sc=Object.values(p.scores);return sc.length?Math.round(sc.reduce((a,b)=>a+b,0)/sc.length):0;};
+const stars=id=>{const m=mastery(id),n=Math.round(m/20);let h='';for(let i=0;i<5;i++)h+=`<span class="${i<n?'s1':'s0'}">★</span>`;return h;};
+const daysSince=d=>{if(!d)return Infinity;return Math.floor((Date.now()-new Date(d))/864e5);};
+const badge=id=>{const d=daysSince(getProg(id).last);if(d===0)return'<span class="badge" style="background:#d1fae5;color:#065f46">✅ Aujourd\'hui</span>';if(d===Infinity)return'<span class="badge" style="background:rgba(124,58,237,.1);color:var(--pd)">🆕 Nouveau</span>';if(d<=3)return`<span class="badge" style="background:var(--warnb);color:var(--warn)">📅 Il y a ${d}j</span>`;return`<span class="badge" style="background:var(--errb);color:var(--err)">🔔 À réviser !</span>`;};
+const enc=sc=>{if(sc>=90)return['🌟 Extraordinaire !','Votre mémoire brille — vous maîtrisez ce texte !'];if(sc>=75)return['🎉 Excellent !','Vous faites des progrès remarquables !'];if(sc>=60)return['👏 Très bien !','Encore un peu d\'entraînement et ce sera parfait.'];if(sc>=40)return['💪 Bon travail !','Chaque essai renforce votre mémoire.'];if(sc>=20)return['🌱 Vous progressez !','Ne vous découragez pas, c\'est tout à fait normal.'];return['✨ C\'est un début !','Chaque répétition compte, même les imparfaites.'];};
+const toast=(msg,ms=3200)=>{const t=document.getElementById('toast');t.textContent=msg;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),ms);};
+const lev=(a,b)=>{const m=a.length,n=b.length,dp=Array.from({length:m+1},(_,i)=>Array.from({length:n+1},(_,j)=>i===0?j:j===0?i:0));for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)dp[i][j]=a[i-1]===b[j-1]?dp[i-1][j-1]:1+Math.min(dp[i-1][j],dp[i][j-1],dp[i-1][j-1]);return dp[m][n];};
+const simScore=(a,b)=>{const aw=a.toLowerCase().replace(/[^a-zà-ÿ0-9\s]/g,'').split(/\s+/),bw=b.toLowerCase().replace(/[^a-zà-ÿ0-9\s]/g,'').split(/\s+/);let ok=0;aw.forEach(w=>{if(bw.some(x=>x===w||lev(w,x)<=1))ok++;});return ok/Math.max(bw.length,1);};
+
+let hist=['lib'];
+const showView=id=>{document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));document.getElementById('v-'+id).classList.add('on');document.getElementById('backBtn').classList.toggle('on',id!=='lib');window.scrollTo(0,0);};
+const go=id=>{hist.push(id);showView(id);};
+function goBack(){stopAll();hist.pop();showView(hist[hist.length-1]||'lib');}
+
+let ttsRate=.85,ttsMuted=false;
+const ttsOK='speechSynthesis' in window;
+let currentSongLang='fr-FR';
+
+function detectLang(text){
+  const w=text.toLowerCase().replace(/[^a-zà-ÿ\s]/g,'').split(/\s+/);
+  const fr=new Set(['le','la','les','de','du','des','et','un','une','je','tu','il','elle','nous','vous','ils','elles','que','qui','dans','pour','avec','sur','pas','ne','mon','ton','son','ma','ta','sa','mais','ou','donc','car','ni','plus','si','au','aux','en','y','se','me','te','lui','leur','dont','où','quand','comme','tout','bien','très','non','oui','moi','toi','ça','ce','cet','cette','ces','même','déjà','encore','aussi','puis','alors','peu','trop','sous','vers','chez','entre','sans','après','avant','contre','depuis','pendant']);
+  const en=new Set(['the','a','an','and','or','but','in','on','at','to','for','with','is','are','was','were','have','has','will','would','can','could','do','does','did','you','i','he','she','we','they','my','your','his','her','our','their','me','him','us','them','it','this','that','these','those','be','been','not','no','so','if','as','by','from','up','out','about','into','before','after','of','off','over','then','once','here','there','when','where','why','how','all','more','most','some','than','too','very','just','what','which','who']);
+  let frScore=0,enScore=0;
+  w.forEach(word=>{if(fr.has(word))frScore++;if(en.has(word))enScore++;});
+  if(enScore===0&&frScore===0)return'fr-FR';
+  return enScore>frScore?'en-US':'fr-FR';
+}
+
+function autoDetectLang(text){
+  if(!text||text.trim().length<20)return;
+  const detected=detectLang(text);
+  const label=detected==='fr-FR'?'🇫🇷 Français détecté':'🇺🇸 Anglais détecté';
+  document.getElementById('langDetected').textContent='— '+label;
+  document.querySelector(`input[name="songLang"][value="${detected}"]`).checked=true;
+}
+
+function getBestVoice(lang){
+  const voices=window.speechSynthesis.getVoices();
+  if(!voices.length)return null;
+  return voices.find(v=>v.lang===lang)||voices.find(v=>v.lang.startsWith(lang.split('-')[0]))||voices[0];
+}
+
+function speak(text,cb){
+  if(!ttsOK||ttsMuted){if(cb)cb();return;}
+  window.speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang=currentSongLang;u.rate=ttsRate;u.pitch=1;
+  const voice=getBestVoice(currentSongLang);
+  if(voice)u.voice=voice;
+  if(cb)u.onend=cb;
+  window.speechSynthesis.speak(u);
+}
+
+function stopSpeech(){if(ttsOK)window.speechSynthesis.cancel();}
+function speakLine(text){if(!ttsOK){toast('⚠️ Synthèse vocale non disponible.');return;}speak(text);}
+function speakSong(){const ls=lines(song());let i=0;const next=()=>{if(i<ls.length)speak(ls[i++],next);};next();}
+function setSpd(btn){ttsRate=parseFloat(btn.dataset.r);btn.closest('.speed-sel').querySelectorAll('.spd').forEach(b=>b.classList.remove('on'));btn.classList.add('on');}
+
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+const sttOK=!!SR;
+let recognition=null,micActive=false;
+
+function initRecognition(onResult){
+  if(!sttOK)return;
+  if(recognition)recognition.stop();
+  recognition=new SR();
+  recognition.lang=currentSongLang;recognition.continuous=false;recognition.interimResults=false;
+  recognition.onresult=e=>{const t=e.results[0][0].transcript;if(onResult)onResult(t);};
+  recognition.onerror=()=>{micActive=false;updateMicUI();};
+  recognition.onend=()=>{micActive=false;updateMicUI();};
+}
+
+function updateMicUI(){
+  const btn=document.getElementById('rp-mic');if(!btn)return;
+  btn.classList.toggle('listening',micActive);btn.textContent=micActive?'⏸️':'🎙️';
+  document.getElementById('rp-status').textContent=micActive?'🔴 En écoute… parlez maintenant':'Cliquez 🔊 pour écouter, puis 🎙️ pour répéter';
+}
+
+function stopAll(){stopSpeech();if(recognition){recognition.stop();micActive=false;}stopKaraoke();}
+
+function langFlag(lang){return lang==='fr-FR'?'🇫🇷':lang==='en-GB'?'🇬🇧':'🇺🇸';}
+
+function renderLib(){
+  document.getElementById('stSongs').textContent=songs.length;
+  const tot=Object.values(prog).reduce((a,p)=>a+(p.sessions||0),0);
+  document.getElementById('stSess').textContent=tot;
+  const avg=songs.length?Math.round(songs.map(s=>mastery(s.id)).reduce((a,b)=>a+b,0)/songs.length):0;
+  document.getElementById('stMast').textContent=avg+'%';
+  const el=document.getElementById('songList');
+  if(!songs.length){el.innerHTML=`<div class="empty"><div class="em">🎤</div><h3>Aucune chanson encore</h3><p>Ajoutez votre première chanson pour commencer</p><br><button class="btn bp lg" style="margin:0 auto" onclick="showAdd()">✨ Ajouter ma première chanson</button></div>`;return;}
+  el.innerHTML=songs.map(s=>{const p=getProg(s.id),ls=lines(s),m=mastery(s.id),fl=langFlag(s.lang||detectLang(s.lyrics));return`<div class="song-row" onclick="showDetail('${s.id}')"><div><h3>${fl} ${s.title}</h3><p>${ls.length} lignes · ${p.sessions||0} session(s) · ${badge(s.id)}</p></div><div class="sr-right"><div class="stars">${stars(s.id)}</div><span style="color:var(--primary);font-weight:800;font-size:14px">${m}%</span><span style="color:var(--muted);font-size:20px">›</span></div></div>`;}).join('');
+}
+
+function showAdd(id=null){
+  S.editId=id;document.getElementById('langDetected').textContent='';
+  if(id){const s=songs.find(x=>x.id===id);document.getElementById('addTitle').textContent='✏️ Modifier la chanson';document.getElementById('inTitle').value=s.title;document.getElementById('inLyrics').value=s.lyrics;document.querySelector(`input[name="songLang"][value="${s.lang||'fr-FR'}"]`).checked=true;}
+  else{document.getElementById('addTitle').textContent='🎵 Ajouter une chanson';document.getElementById('inTitle').value='';document.getElementById('inLyrics').value='';document.querySelector('input[name="songLang"][value="fr-FR"]').checked=true;}
+  go('add');
+}
+function saveSong(){
+  const title=document.getElementById('inTitle').value.trim(),lyrics=document.getElementById('inLyrics').value.trim();
+  if(!title){toast('⚠️ Entrez un titre');return;}if(!lyrics){toast('⚠️ Entrez les paroles');return;}
+  const lang=document.querySelector('input[name="songLang"]:checked').value;
+  if(S.editId){const i=songs.findIndex(s=>s.id===S.editId);songs[i].title=title;songs[i].lyrics=lyrics;songs[i].lang=lang;toast('✅ Chanson modifiée !');}
+  else{songs.push({id:'s'+Date.now(),title,lyrics,lang,created:new Date().toISOString()});toast('🎵 Chanson ajoutée !');}
+  save();hist=['lib'];renderLib();showView('lib');
+}
+
+function showDetail(id){
+  S.songId=id;const s=songs.find(x=>x.id===id),ls=lines(s),p=getProg(id),m=mastery(id);
+  currentSongLang=s.lang||detectLang(s.lyrics);
+  document.getElementById('dTitle').textContent=langFlag(currentSongLang)+' '+s.title;
+  document.getElementById('dStats').textContent=`${ls.length} lignes · ${p.sessions||0} session(s) · Maîtrise : ${m}%`;
+  const tip=document.getElementById('dTip');
+  if(m===0)tip.innerHTML='<strong>🧠 Par où commencer ?</strong> Essayez le <strong>Karaoké</strong> ou la <strong>Lecture Guidée</strong> pour vous familiariser, puis montez progressivement.';
+  else if(m<50)tip.innerHTML='<strong>💡 Vous progressez !</strong> Essayez <strong>Écoute & Écris</strong> pour combiner l\'écoute et l\'écriture.';
+  else if(m<80)tip.innerHTML='<strong>🌟 Excellent travail !</strong> Passez au <strong>Rappel Libre</strong> pour ancrer le texte durablement.';
+  else tip.innerHTML='<strong>🏆 Vous maîtrisez ce texte !</strong> Continuez à pratiquer régulièrement.';
+  hist=['lib','detail'];showView('detail');
+}
+function editSong(){showAdd(S.songId);}
+function deleteSong(){const s=song();if(!confirm(`Supprimer "${s.title}" ?`))return;songs=songs.filter(x=>x.id!==S.songId);delete prog[S.songId];save();toast('🗑️ Supprimée');hist=['lib'];renderLib();showView('lib');}
+
+function record(mode,sc){const p=getProg(S.songId);p.sessions=(p.sessions||0)+1;p.last=new Date().toISOString();if(sc!=null)p.scores[mode]=p.scores[mode]?Math.max(p.scores[mode],sc):sc;save();renderLib();}
+function finish(mode,sc){record(mode,sc);toast(`✨ Session terminée ! Maîtrise : ${mastery(S.songId)}%`);hist=['lib'];showDetail(S.songId);}
+
+function startMode(mode){stopAll();S.mode=mode;S.idx=0;const s=song();({guided:startGuided,chunks:startChunks,blanks:startBlanks,recall:startRecall,fl:startFL,hidden:startHidden,karaoke:startKaraoke2,dictate:startDictate,repeat:startRepeat})[mode](s);}
+
+function startGuided(s){
+  document.getElementById('g-name').textContent=s.title;
+  const raw=s.lyrics.split('\n');let html='';
+  raw.forEach(l=>{const t=l.trim();if(!t)html+='<div class="vb"></div>';else html+=`<p class="fl" onclick="hlLine(this)"><span style="flex:1">${t}</span><button class="spk" onclick="event.stopPropagation();speakLine('${t.replace(/'/g,"\\'").replace(/"/g,'&quot;')}')">🔊</button></p>`;});
+  document.getElementById('g-lyrics').innerHTML=html;go('guided');
+}
+function hlLine(el){document.querySelectorAll('.fl').forEach(x=>x.classList.remove('hl'));el.classList.add('hl');el.scrollIntoView({behavior:'smooth',block:'center'});}
+
+let cLines=[];
+function startChunks(s){cLines=lines(s);S.idx=0;document.getElementById('c-name').textContent=s.title;document.getElementById('c-hint').classList.remove('on');document.getElementById('c-b2').style.display='none';document.getElementById('c-done').style.display='none';document.getElementById('c-b1').style.display='flex';updateChunk();go('chunks');}
+function updateChunk(){const tot=cLines.length,i=S.idx;document.getElementById('c-pb').style.width=Math.round(i/tot*100)+'%';document.getElementById('c-cnt').textContent=`Ligne ${i+1} / ${tot}`;document.getElementById('c-disp').innerHTML='<span class="lq">? ? ? ? ?</span>';document.getElementById('c-disp').style.opacity='.35';document.getElementById('c-hint').classList.remove('on');document.getElementById('c-b1').style.display='flex';document.getElementById('c-b2').style.display='none';document.getElementById('c-done').style.display='none';}
+function chunkHint(){const fl=cLines[S.idx].split(' ').map(w=>w[0]||'').join(' · ');document.getElementById('c-hint').textContent='💭 '+fl;document.getElementById('c-hint').classList.add('on');}
+function chunkReveal(){document.getElementById('c-disp').style.opacity='1';document.getElementById('c-disp').innerHTML=`<span class="lt">${cLines[S.idx]}</span>`;document.getElementById('c-b1').style.display='none';const last=S.idx>=cLines.length-1;document.getElementById(last?'c-done':'c-b2').style.display='flex';}
+function chunkNext(){S.idx++;updateChunk();}
+
+let bData=[];window._bScore=0;
+function startBlanks(s){document.getElementById('b-name').textContent=s.title;document.getElementById('b-res').style.display='none';S.pct=20;document.querySelectorAll('.db').forEach(b=>b.classList.remove('on'));document.querySelector('.db[data-p="20"]').classList.add('on');genBlanks();go('blanks');}
+function setPct(p,btn){S.pct=p;document.querySelectorAll('.db').forEach(b=>b.classList.remove('on'));btn.classList.add('on');document.getElementById('b-res').style.display='none';genBlanks();}
+function genBlanks(){
+  const s=song(),raw=s.lyrics.split('\n');bData=[];let cnt=0,html='';
+  raw.forEach(l=>{const t=l.trim();if(!t){html+='<br><br>';return;}t.split(' ').forEach(w=>{const c=w.replace(/[^a-zA-ZÀ-ÿ0-9]/g,''),p=w.replace(/[a-zA-ZÀ-ÿ0-9]/g,''),blank=c.length>2&&Math.random()*100<S.pct;if(blank){const id='bi'+cnt++,wd=Math.max(60,c.length*12)+'px';bData.push({ans:c,id});html+=`<input type="text" class="bi" id="${id}" style="width:${wd}" placeholder="${'_'.repeat(Math.min(c.length,5))}">${p} `;}else html+=w+' ';});html+='<br>';});
+  document.getElementById('b-content').innerHTML=html;document.getElementById('b-res').style.display='none';
+}
+function checkBlanks(){
+  if(!bData.length){toast('Aucun mot — augmentez la difficulté !');return;}let ok=0;
+  bData.forEach(it=>{const inp=document.getElementById(it.id),u=inp.value.trim().toLowerCase().replace(/[^a-zà-ÿ0-9]/g,''),a=it.ans.toLowerCase(),correct=u===a||lev(u,a)<=1;inp.classList.toggle('ok',correct);inp.classList.toggle('ko',!correct);if(correct)ok++;else if(!u)inp.value=it.ans;});
+  const sc=Math.round(ok/bData.length*100);window._bScore=sc;const[e1,e2]=enc(sc);
+  document.getElementById('b-sc').textContent=sc+'%';document.getElementById('b-enc').textContent=e1+' '+e2;
+  document.getElementById('b-res').style.display='block';document.getElementById('b-res').scrollIntoView({behavior:'smooth'});
+}
+
+window._rScore=0;
+function startRecall(s){document.getElementById('r-name').textContent=s.title;document.getElementById('r-input').value='';document.getElementById('r-res').style.display='none';document.getElementById('r-hints').style.display='block';document.getElementById('r-hint').classList.remove('on');S.rHintIdx=0;go('recall');}
+function recallHint(){const ls=lines(song()),h=['💭 Début : "'+ls[0]+'"','💭 La chanson a '+ls.length+' lignes.','💭 Milieu : "'+(ls[Math.floor(ls.length/2)]||'')+'"','💭 Avant-dernière : "'+(ls[ls.length-2]||'')+'"'];const el=document.getElementById('r-hint');el.textContent=h[S.rHintIdx%h.length];el.classList.add('on');S.rHintIdx++;}
+function resetRecall(){document.getElementById('r-input').value='';document.getElementById('r-res').style.display='none';document.getElementById('r-hints').style.display='block';document.getElementById('r-hint').classList.remove('on');S.rHintIdx=0;}
+function checkRecall(){
+  const orig=lines(song()),user=document.getElementById('r-input').value.split('\n').map(l=>l.trim()).filter(l=>l.length>0);
+  if(!user.length){toast('⚠️ Écrivez quelque chose d\'abord !');return;}
+  let ok=0,cmp='';
+  orig.forEach((ol,i)=>{const ul=user[i]||'',s=ul?simScore(ul,ol):0;if(s>=.75){ok++;cmp+=`<div class="cl ok">✓ ${ul}</div>`;}else if(!ul)cmp+=`<div class="cl mx">○ <em>manquant</em><div class="co">→ ${ol}</div></div>`;else cmp+=`<div class="cl ko">✗ ${ul}<div class="co">→ ${ol}</div></div>`;});
+  const sc=Math.round(ok/orig.length*100);window._rScore=sc;const[e1,e2]=enc(sc);
+  document.getElementById('r-sc').textContent=sc+'%';document.getElementById('r-enc').textContent=e1+' '+e2;document.getElementById('r-det').textContent=`${ok} ligne(s) juste(s) sur ${orig.length}`;
+  document.getElementById('r-cmp').innerHTML=cmp;document.getElementById('r-hints').style.display='none';document.getElementById('r-res').style.display='block';document.getElementById('r-res').scrollIntoView({behavior:'smooth'});
+}
+
+let flLines=[];
+function startFL(s){flLines=lines(s);S.idx=0;document.getElementById('fl-name').textContent=s.title;document.getElementById('fl-rev').style.display='none';document.getElementById('fl-b1').style.display='flex';document.getElementById('fl-b2').style.display='none';document.getElementById('fl-done').style.display='none';updateFL();go('fl');}
+const getFL=line=>line.split(' ').map(w=>{const c=w.replace(/[^a-zA-ZÀ-ÿ0-9]/,'');return c[0]?c[0].toUpperCase():'•';}).join('  ');
+function updateFL(){const tot=flLines.length,i=S.idx;document.getElementById('fl-pb').style.width=Math.round(i/tot*100)+'%';document.getElementById('fl-cnt').textContent=`Ligne ${i+1} / ${tot}`;document.getElementById('fl-hint').textContent=getFL(flLines[i]);document.getElementById('fl-rev').style.display='none';document.getElementById('fl-b1').style.display='flex';document.getElementById('fl-b2').style.display='none';document.getElementById('fl-done').style.display='none';}
+function speakFL(){speak(getFL(flLines[S.idx]).split('  ').join(', '));}
+function flReveal(){document.getElementById('fl-line').textContent=flLines[S.idx];document.getElementById('fl-rev').style.display='flex';document.getElementById('fl-b1').style.display='none';const last=S.idx>=flLines.length-1;document.getElementById(last?'fl-done':'fl-b2').style.display='flex';}
+function flNext(){S.idx++;updateFL();}
+
+let hLines=[];
+function startHidden(s){hLines=lines(s);if(hLines.length<2){toast('⚠️ Cette chanson doit avoir au moins 2 lignes.');return;}S.idx=1;document.getElementById('h-name').textContent=s.title;document.getElementById('h-b1').style.display='flex';document.getElementById('h-b2').style.display='none';document.getElementById('h-done').style.display='none';updateHid();go('hidden');}
+function updateHid(){const tot=hLines.length,i=S.idx;document.getElementById('h-pb').style.width=Math.round(i/tot*100)+'%';document.getElementById('h-cnt').textContent=`Ligne ${i+1} / ${tot}`;document.getElementById('h-prev').textContent=hLines[i-1]||'';const hn=document.getElementById('h-next');hn.textContent=hLines[i]||'';hn.classList.remove('on');document.getElementById('h-b1').style.display='flex';document.getElementById('h-b2').style.display='none';document.getElementById('h-done').style.display='none';}
+function hidReveal(){document.getElementById('h-next').classList.add('on');document.getElementById('h-b1').style.display='none';const last=S.idx>=hLines.length-1;document.getElementById(last?'h-done':'h-b2').style.display='flex';}
+function hidNext(){S.idx++;updateHid();}
+
+let kLines=[],kIdx=0,kPlaying=false;
+function startKaraoke2(s){
+  kLines=lines(s);kIdx=0;kPlaying=false;
+  document.getElementById('k-name').textContent=s.title;
+  document.getElementById('k-play').style.display='flex';document.getElementById('k-play').textContent='▶️ Démarrer';
+  document.getElementById('k-pause').style.display='none';document.getElementById('k-stop').style.display='none';document.getElementById('k-done').style.display='none';
+  document.getElementById('k-mute').checked=false;ttsMuted=false;
+  const raw=s.lyrics.split('\n');let html='';
+  raw.forEach((l,ri)=>{const t=l.trim();if(!t){html+='<div class="kvb"></div>';return;}const li=kLines.indexOf(t);html+=`<p class="kl" id="kl${li>=0?li:'x'+ri}">${t}</p>`;});
+  document.getElementById('k-lyrics').innerHTML=html;go('karaoke');
+}
+function karaokePlay(){
+  if(!ttsOK){toast('⚠️ Synthèse vocale non disponible (essayez Safari sur iPhone ou Chrome)');return;}
+  kPlaying=true;document.getElementById('k-play').style.display='none';document.getElementById('k-pause').style.display='flex';document.getElementById('k-stop').style.display='flex';
+  kReadLine();
+}
+function kReadLine(){
+  if(!kPlaying||kIdx>=kLines.length){if(kIdx>=kLines.length)karaokeFinish();return;}
+  document.querySelectorAll('.kl').forEach((el,i)=>{el.classList.remove('active','past','coming');if(i<kIdx)el.classList.add('past');else if(i===kIdx)el.classList.add('active');else el.classList.add('coming');});
+  const el=document.getElementById('kl'+kIdx);if(el)el.scrollIntoView({behavior:'smooth',block:'center'});
+  if(ttsMuted){setTimeout(()=>{kIdx++;kReadLine();},(kLines[kIdx]||'').length*80+600);}
+  else speak(kLines[kIdx],()=>{if(!kPlaying)return;setTimeout(()=>{kIdx++;kReadLine();},700);});
+}
+function karaokePause(){kPlaying=false;stopSpeech();document.getElementById('k-pause').style.display='none';document.getElementById('k-play').textContent='▶️ Reprendre';document.getElementById('k-play').style.display='flex';}
+function karaokeStop(){kPlaying=false;stopSpeech();kIdx=0;document.getElementById('k-play').textContent='▶️ Démarrer';document.getElementById('k-play').style.display='flex';document.getElementById('k-pause').style.display='none';document.getElementById('k-stop').style.display='none';document.querySelectorAll('.kl').forEach(el=>el.classList.remove('active','past','coming'));}
+function stopKaraoke(){kPlaying=false;}
+function karaokeFinish(){kPlaying=false;document.getElementById('k-pause').style.display='none';document.getElementById('k-stop').style.display='none';document.getElementById('k-play').textContent='▶️ Rejouer';document.getElementById('k-play').style.display='flex';document.getElementById('k-done').style.display='flex';document.querySelectorAll('.kl').forEach(el=>{el.classList.remove('active','past','coming');el.classList.add('past');});}
+function toggleMute(cb){ttsMuted=cb.checked;}
+
+let dLines=[],dCorrect=0;window._dScore=0;
+function startDictate(s){dLines=lines(s);dCorrect=0;S.idx=0;document.getElementById('d-name').textContent=s.title;document.getElementById('d-nosupport').classList.toggle('on',!ttsOK);document.getElementById('d-done').style.display='none';updateDictate();go('dictate');if(ttsOK)setTimeout(()=>dictateSpeak(),600);}
+function updateDictate(){const tot=dLines.length,i=S.idx;document.getElementById('d-pb').style.width=Math.round(i/tot*100)+'%';document.getElementById('d-cnt').textContent=`Ligne ${i+1} / ${tot}`;const inp=document.getElementById('d-input');inp.value='';inp.classList.remove('ok','ko');inp.disabled=false;document.getElementById('d-answer').classList.remove('on');document.getElementById('d-b1').style.display='flex';document.getElementById('d-b2').style.display='none';const spk=document.getElementById('d-spkbtn');spk.classList.remove('speaking');spk.textContent='🔊';}
+function dictateSpeak(){if(!ttsOK){toast('⚠️ Synthèse vocale non disponible');return;}const btn=document.getElementById('d-spkbtn');btn.classList.add('speaking');btn.textContent='🔊…';speak(dLines[S.idx],()=>{btn.classList.remove('speaking');btn.textContent='🔊';});}
+function checkDictate(){const inp=document.getElementById('d-input'),val=inp.value.trim();if(!val){toast('⚠️ Écrivez quelque chose !');return;}const orig=dLines[S.idx],ok=simScore(val,orig)>=.70;if(ok)dCorrect++;inp.classList.add(ok?'ok':'ko');inp.disabled=true;const ans=document.getElementById('d-answer');ans.innerHTML=ok?`<span style="color:var(--ok);font-weight:600">✓ Correct !</span>`:`<span style="color:var(--err);font-weight:600">✗ La ligne : </span><em>"${orig}"</em>`;ans.classList.add('on');document.getElementById('d-b1').style.display='none';const last=S.idx>=dLines.length-1;if(last)showDictateResults();else document.getElementById('d-b2').style.display='flex';}
+function skipDictate(){const ans=document.getElementById('d-answer');ans.innerHTML=`<span style="color:var(--warn)">⏭️ Passé. La ligne : </span><em>"${dLines[S.idx]}"</em>`;ans.classList.add('on');document.getElementById('d-b1').style.display='none';const last=S.idx>=dLines.length-1;if(last)showDictateResults();else document.getElementById('d-b2').style.display='flex';}
+function nextDictate(){S.idx++;updateDictate();if(ttsOK)setTimeout(()=>dictateSpeak(),400);}
+function showDictateResults(){const sc=Math.round(dCorrect/dLines.length*100);window._dScore=sc;const[e1,e2]=enc(sc);document.getElementById('d-sc').textContent=sc+'%';document.getElementById('d-enc').textContent=e1+' '+e2;document.getElementById('d-det').textContent=`${dCorrect} ligne(s) juste(s) sur ${dLines.length}`;document.getElementById('d-b1').style.display='none';document.getElementById('d-b2').style.display='none';document.getElementById('d-done').style.display='block';document.getElementById('d-done').scrollIntoView({behavior:'smooth'});}
+
+let rpLines=[],rpCorrect=0;window._rpScore=0;
+function startRepeat(s){if(!sttOK)document.getElementById('rp-nosupport').classList.add('on');rpLines=lines(s);rpCorrect=0;S.idx=0;document.getElementById('rp-name').textContent=s.title;document.getElementById('rp-done').style.display='none';document.getElementById('rp-b1').style.display='flex';document.getElementById('rp-next').disabled=true;document.getElementById('rp-next').style.opacity='.5';document.getElementById('rp-feedback').style.display='none';updateRepeat();go('repeat');if(ttsOK)setTimeout(()=>repeatSpeak(),600);}
+function updateRepeat(){const tot=rpLines.length,i=S.idx;document.getElementById('rp-pb').style.width=Math.round(i/tot*100)+'%';document.getElementById('rp-cnt').textContent=`Ligne ${i+1} / ${tot}`;document.getElementById('rp-transcript').textContent='…';document.getElementById('rp-status').textContent='Cliquez 🔊 pour écouter, puis 🎙️ pour répéter';document.getElementById('rp-feedback').style.display='none';document.getElementById('rp-next').disabled=true;document.getElementById('rp-next').style.opacity='.5';document.getElementById('rp-b1').style.display='flex';const spk=document.getElementById('rp-spkbtn');if(spk){spk.classList.remove('speaking');spk.textContent='🔊';}}
+function repeatSpeak(){if(!ttsOK){toast('⚠️ Synthèse vocale non disponible');return;}const btn=document.getElementById('rp-spkbtn');btn.classList.add('speaking');btn.textContent='🔊…';speak(rpLines[S.idx],()=>{btn.classList.remove('speaking');btn.textContent='🔊';});}
+function toggleMic(){if(!sttOK){toast('⚠️ Micro non disponible. Utilisez Chrome ou Edge.');return;}if(micActive){recognition.stop();micActive=false;updateMicUI();return;}micActive=true;updateMicUI();initRecognition(transcript=>{micActive=false;updateMicUI();document.getElementById('rp-transcript').textContent='"'+transcript+'"';const ok=simScore(transcript,rpLines[S.idx])>=.65;if(ok)rpCorrect++;const fb=document.getElementById('rp-feedback');fb.style.display='block';if(ok){fb.style.background='var(--okb)';fb.style.color='#065f46';fb.textContent='✓ Excellent ! Vous avez bien dit la ligne !';}else{fb.style.background='var(--errb)';fb.style.color='#991b1b';fb.textContent=`✗ Pas tout à fait. La ligne : "${rpLines[S.idx]}"`;}document.getElementById('rp-next').disabled=false;document.getElementById('rp-next').style.opacity='1';});recognition.start();}
+function skipRepeat(){const fb=document.getElementById('rp-feedback');fb.style.display='block';fb.style.background='var(--warnb)';fb.style.color='#92400e';fb.textContent=`⏭️ Passé. La ligne : "${rpLines[S.idx]}"`;document.getElementById('rp-next').disabled=false;document.getElementById('rp-next').style.opacity='1';}
+function nextRepeat(){S.idx++;if(S.idx>=rpLines.length){showRepeatResults();return;}updateRepeat();if(ttsOK)setTimeout(()=>repeatSpeak(),400);}
+function showRepeatResults(){const sc=Math.round(rpCorrect/rpLines.length*100);window._rpScore=sc;const[e1,e2]=enc(sc);document.getElementById('rp-sc').textContent=sc+'%';document.getElementById('rp-enc').textContent=e1+' '+e2;document.getElementById('rp-det').textContent=`${rpCorrect} ligne(s) réussie(s) sur ${rpLines.length}`;document.getElementById('rp-b1').style.display='none';document.getElementById('rp-done').style.display='block';document.getElementById('rp-done').scrollIntoView({behavior:'smooth'});}
+
+if(ttsOK)window.speechSynthesis.onvoiceschanged=()=>window.speechSynthesis.getVoices();
+renderLib();
+</script>
+</body>
+</html>
